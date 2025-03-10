@@ -4,6 +4,7 @@
  * Change Logs:
  * Date           Author            Notes
  * 2021-09-09     qiyongzhong       first version
+ * 2025-03-10     wangrongwen       add integral anti-windup
  */
 
 #include <qpid.h>
@@ -84,22 +85,23 @@ float qpid_cal_pos(qpid_t *qpid, float cur) // 计算位置型pid, 输出位置�
 
     QPID_ASSERT(qpid != RT_NULL);
 
-    // qpid->err[2] += qpid->err[0];    //计算偏差积分到err[2], 将积分滞后1个周期
-    qpid->err[1] = qpid->err[0];    // 转移上次偏差到err[1]
-    qpid->err[0] = qpid->dst - cur; // 计算本次偏差到err[0]
+    // 更新偏差，先将上一次偏差赋值，然后计算当前偏差
+    qpid->err[1] = qpid->err[0];
+    qpid->err[0] = qpid->dst - cur;
 
-    rst = qpid->kp * qpid->err[0]; // 计算比例项
-    // rst += qpid->ki * qpid->err[2];//计算累加积分项
-    rst += qpid->kd * (qpid->err[0] - qpid->err[1]); // 计算累加微分项
+    // 计算比例项和微分项
+    rst = qpid->kp * qpid->err[0];
+    rst += qpid->kd * (qpid->err[0] - qpid->err[1]);
 
+#ifdef ENABLE_INTEGRAL_ANTI_WINDUP
+    // 开启积分抗饱和处理
     if (qpid->ki_min < qpid->ki_max) // 限值参数可用
     {
-        // 对积分项抗饱和处理
         // 条件积分：只有当前输出未饱和时才更新积分项
         if ((rst < qpid->out_max) && (rst > qpid->out_min))
         {
             qpid->err[2] += qpid->err[0];
-            // 对积分项进行限幅，防止积分过大
+            // 限幅处理，防止积分项过大
             if (qpid->err[2] > qpid->ki_max)
             {
                 qpid->err[2] = qpid->ki_max;
@@ -114,8 +116,13 @@ float qpid_cal_pos(qpid_t *qpid, float cur) // 计算位置型pid, 输出位置�
     {
         qpid->err[2] += qpid->err[0];
     }
+#else
+    // 不开启抗饱和处理时，直接累计积分项
+    qpid->err[2] += qpid->err[0];
+#endif
 
-    rst += qpid->ki * qpid->err[2]; // 计算累加积分项
+    // 计算积分项并累加到输出
+    rst += qpid->ki * qpid->err[2];
 
     // 对输出进行限幅处理
     if (qpid->out_min < qpid->out_max)
@@ -130,5 +137,5 @@ float qpid_cal_pos(qpid_t *qpid, float cur) // 计算位置型pid, 输出位置�
         }
     }
 
-    return (rst);
+    return rst;
 }

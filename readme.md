@@ -88,6 +88,7 @@ qpid package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
 | 参数宏 | 说明 |
 | ---- | ---- |
 | QPID_USING_TEST       | 使用测试功能
+| ENABLE_INTEGRAL_ANTI_WINDUP | 开启积分抗饱和处理
 
 ## 3. 联系方式
 
