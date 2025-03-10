@@ -51,11 +51,18 @@ qpid package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
 - 参数 ：kd--微分项系数值
 - 返回 ：无
 
-#### void qpid_set_lmt(qpid_t *qpid, float min, float max);
+#### void qpid_set_ki_lmt(qpid_t *qpid, float ki_max, float ki_min);
+- 功能 ：设置计算积分的限值, 当限值不合法时将不会被使用（只有在使用qpid_cal_pos 函数使才会生效）
+- 参数 ：qpid--控制数据指针
+- 参数 ：ki_max--积分最大限值
+- 参数 ：ki_min--积分最小限值
+- 返回 ：无
+
+#### void qpid_set_out_lmt(qpid_t *qpid, float out_min, float out_max);
 - 功能 ：设置计算输出的限值, 当限值不合法时将不会被使用
 - 参数 ：qpid--控制数据指针
-- 参数 ：min--输出最小限值
-- 参数 ：max--输出最大限值
+- 参数 ：out_min--输出最小限值
+- 参数 ：out_max--输出最大限值
 - 返回 ：无
 
 #### float qpid_cal_inc(qpid_t *qpid, float cur);
@@ -84,7 +91,7 @@ qpid package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
 
 ## 3. 联系方式
 
-* 维护：qiyongzhong
-* 主页：https://github.com/qiyongzhong0/rt-thread-qpid
-* 主页：https://gitee.com/qiyongzhong0/rt-thread-qpid
-* 邮箱：917768104@qq.com
+* 维护：wangrongwen
+* 主页：https://github.com/wangwang105/rt-thread-qpid
+* fork主页：https://github.com/qiyongzhong0/rt-thread-qpid
+* 邮箱：1059451203@qq.com

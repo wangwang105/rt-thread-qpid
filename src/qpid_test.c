@@ -127,7 +127,7 @@ static void qpid_test(int argc, char **argv)
         }
         sscanf(argv[2], "%f", &min);
         sscanf(argv[3], "%f", &max);
-        qpid_set_lmt(&qpid_datas, min, max);
+        qpid_set_out_lmt(&qpid_datas, min, max);
         sprintf(str, "%f, %f", min, max);
         rt_kprintf("qpid set limit min, max = %s.\n", str);
         return;
